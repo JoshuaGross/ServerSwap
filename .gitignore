@@ -1,0 +1,6 @@
+node_modules
+*.un~
+.startup.js.run
+commit_message
+*.DS_STORE
+tmp
