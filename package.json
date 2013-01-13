@@ -1,0 +1,12 @@
+{
+  "name": "serverswap",
+  "version": "1.0.0",
+  "private": false,
+  "bin": { "serverswap": "./lib/serverswap.js" },
+  "engines": {
+    "node": ">=0.8.6"
+  },
+  "dependencies": {
+    "async":"*"
+  }
+}

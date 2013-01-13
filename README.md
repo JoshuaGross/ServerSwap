@@ -20,48 +20,34 @@ Your server does not need to be running on Node.js, but I have only provided a c
 Server Usage
 ------------
 The core intuition behind ServerSwap is that servers can communicate with ServerSwap to let it know when everything they need has been initialized, and
-all they need to do is bind to a port:
-
-```
-// server.js
-var http = require('http'),
-  , serverswap = require('serverswap');
-
-// connect to databases
-// ...
-// load some more stuff
-// ...
-
-serverswap.readyFor(':80', function () {
-  http.createServer(function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end("Hello World!\n");
-  }).listen(80);
-})
-```
+all they need to do is bind to a port.
 
 When the ServerSwap instance receives the readyFor message, it will attempt to find an existing server, bring it down, and then send a message back to your new server that it can safely start up.
 
-Old servers are killed by default, but you can also set your server to respond to a `takeDown` message:
+Old servers are killed unceremoniously by default, but you can also set your server to respond to a `takeDown` message:
 
 ```
 // server.js
-var http = require('http'),
-  , serverswap = require('serverswap');
+// Start with: serverswap server.js
+var http = require('http')
+  , serverswap = require('../');
 
 // connect to databases
 // ...
 // load some more stuff
 // ...
 
-serverswap.readyFor(':80', function () {
+serverswap.readyFor(':8080', function () {
   var server = http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end("Hello World!\n");
-  }).listen(80);
+  }).listen(8080);
 
-  serverswap.onTakedown(':80', function () {
+  console.log('Listening on port 8080');
+
+  serverswap.onTakedown(':8080', function () {
     // Stop taking new connections on port 80
+    console.log('Took down port 8080');
     server.close();
     // Give existing requests 5 seconds to finish processing
     setTimeout(function () {
