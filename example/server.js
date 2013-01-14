@@ -18,6 +18,8 @@ serverswap.readyFor(':8080', function () {
 
   console.log('Listening on port 8080');
 
+  serverswap.serverUp(); // optional otherwise, but necessary for "deploy" mode
+
   serverswap.onTakedown(':8080', function () {
     //Stop taking new connections on port 80
     console.log('Took down port 8080');
