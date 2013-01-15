@@ -13,20 +13,23 @@ serverswap.readyFor(':8080', function () {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     setTimeout(function () {
       res.end("Hello World!\n");
-    },Math.random()*4000)
-  }).listen(8080);
+    },Math.random()*0)
+  }).listen(8080, function () {
+    console.log('Example server [',process.pid,'] Listening on port 8080');
 
-  console.log('Listening on port 8080');
+    serverswap.serverUp(); // optional otherwise, but necessary for "deploy" mode
 
-  serverswap.serverUp(); // optional otherwise, but necessary for "deploy" mode
-
-  serverswap.onTakedown(':8080', function () {
-    //Stop taking new connections on port 80
-    console.log('Took down port 8080');
-    server.close();
-     //Give existing requests 5 seconds to finish processing
-    setTimeout(function () {
-      process.exit(0);
-    }, 5*1000);
+    serverswap.onTakedown(':8080', function (done) {
+      //Stop taking new connections on port 80
+      console.log('Example server [',process.pid,'] Taking down port 8080');
+      server.close(function () {
+        console.log('Example server [',process.pid,'] Took down port 8080');
+        done();
+      });
+       //Give existing requests 5 seconds to finish processing
+      setTimeout(function () {
+        process.exit(0);
+      }, 5*1000);
+    });
   });
 })
