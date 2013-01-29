@@ -59,6 +59,11 @@ serverswap.readyFor(':8080', function () {
 
 You can send as many `readyFor` and `onTakedown` messages as you want for a staggered server deploy. `serverswap` will keep running until the older server process exits.
 
+Deploy mode
+-----------
+You can also run ServerSwap in deploy mode by running `serverswap-deploy`. It will keep running either until the processes it spawns dies, either by
+failure or replacement. 
+
 Motivation
 ----------
 While working on SpanDeX.io I would often need to deploy code to our production servers, which resulted in (at worst) 30 seconds to (at best) 6 seconds of downtime in which users would be disconnected from documents and the server would appear dead to the outside world.
