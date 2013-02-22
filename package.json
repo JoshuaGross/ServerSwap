@@ -6,6 +6,11 @@
   "engines": {
     "node": ">=0.8.6"
   },
+  "devDependencies": {
+    "expect.js":"*",
+    "sinon":"*",
+    "ms":"*"
+  },
   "dependencies": {
     "async":"*",
     "semver":"*"
