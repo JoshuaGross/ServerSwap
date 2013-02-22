@@ -3,7 +3,7 @@ var spawn = require('child_process').spawn
   , sinon = require('sinon')
   , ms = require('ms');
 
-var grepForProcess = function (search, cb) {
+function grepForProcess  (search, cb) {
   require('child_process').exec('ps aux | grep -v grep | grep -v vim | grep -v emacs | grep '+search, function (error, stdout, stderr) {
     var output = (stdout+stderr).replace(/[\s\n]+$/,'').split(/[\r\n]+/);
     if (output[output.length-1] === '') {
