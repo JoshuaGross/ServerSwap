@@ -69,6 +69,25 @@ function spawnServerDeploy (cb) {
   setTimeout(checkSuccessfulDeploy, 2500);
 }
 
+// 
+var checkPort8080_runInterval;
+function checkPort8080 () {
+  if (!checkPort8080_runInterval) {
+    checkPort8080_runInterval = setInterval(checkPort8080_run, 100);
+  }
+}
+function stopCheckPort8080 () {
+  clearInterval(checkPort8080_runInterval);
+  checkPort8080_runInterval = null;
+}
+function checkPort8080_run () {
+  var http = require('http');
+  return http.get('http://localhost:8080', function (res) {
+  }).on('error', function () {
+    expect('localhost:8080 became unavailable, sad day!').to.be(null);
+  });
+}
+
 describe('serverswap error recovery when spawning many things relatively quickly', function () {
   var serverswapDeployPIDs = [];
   var serverPIDs = [];
@@ -103,19 +122,25 @@ describe('serverswap error recovery when spawning many things relatively quickly
 });
 
 // this should test race conditions where many servers "grab" a resource at once.
+// the next way to make this a little more robust would be to verify that port :8080 is always occupied
 describe('serverswap error recovery when spawning many things at once', function () {
-  return;
-
   var serverswapDeployPIDs = [];
   var serverPIDs = [];
 
   for (var i = 1; i < 100; i += i) {
     (function (i) {
-      it('should spawn '+i+' servers simultaneously; there should be 1 live process and 1 live deploy at the end', function (done) {
+      it('should spawn '+i+' servers simultaneously; there should be 1 live process and 1 live deploy at the end', function (testDone) {
+
+        var done = function () {
+          stopCheckPort8080();
+          testDone();
+        };
+
         this.timeout(0);
 
         async.times(i, function (i, next) {
           spawnServerDeploy(function (deployerPID, serverPID) {
+            checkPort8080();
             console.log(i, deployerPID, serverPID)
             next();
           });
