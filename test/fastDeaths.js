@@ -71,9 +71,10 @@ function spawnServerDeploy (cb) {
 
 // 
 var checkPort8080_runInterval;
+var failures = 0;
 function checkPort8080 () {
   if (!checkPort8080_runInterval) {
-    checkPort8080_runInterval = setInterval(checkPort8080_run, 100);
+    checkPort8080_runInterval = setInterval(checkPort8080_run, 20);
   }
 }
 function stopCheckPort8080 () {
@@ -83,9 +84,10 @@ function stopCheckPort8080 () {
 function checkPort8080_run () {
   var http = require('http');
   return http.get('http://localhost:8080', function (res) {
+    failures = 0;
   }).on('error', function (e) {
-    console.log(e)
-    expect('localhost:8080 became unavailable, sad day!').to.be(null);
+    failures++;
+    expect(failures).to.be.lessThan(12); // <240ms of downtime
   });
 }
 
@@ -120,6 +122,36 @@ describe('serverswap error recovery when spawning many things relatively quickly
       });
     })(i);
   }
+});
+
+describe('serverswap stability', function () {
+  var serverswapDeployPIDs = [];
+  var serverPIDs = [];
+
+  (function (i) {
+    it('should spawn '+i+' servers repeatedly. localhost:8080 should never go down.', function (done) {
+      this.timeout(0);
+
+      async.timesSeries(i, function (j, next) {
+        spawnServerDeploy(function (deployerPID, serverPID) {
+          checkPort8080();
+          var timer = Math.random()*6*500;
+          console.log('wait',timer,'ms...')
+          setTimeout(next, timer);
+        });
+      }, function () {
+        setTimeout(function () {
+          grepForProcess('simple-webserver', function (error, output) {
+            console.log(output);
+            expect(output.length).to.be(2);
+            stopCheckPort8080();
+            done();
+          });
+        }, 7000);
+      })
+
+    });
+  })(100);
 });
 
 // this should test race conditions where many servers "grab" a resource at once.

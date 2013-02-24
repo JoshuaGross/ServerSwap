@@ -103,7 +103,7 @@ describe('serverswap with test/server.js', function () {
         });
       });
 
-    }, 6000);
+    }, 6500);
   });
 
   it('should start up a second server and close down the old one... again!', function (done) {
