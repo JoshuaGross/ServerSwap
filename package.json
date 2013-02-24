@@ -1,6 +1,6 @@
 {
   "name": "serverswap",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": false,
   "bin": { "serverswap": "./lib/serverswap.js", "serverswap-deploy": "./lib/serverswap.js" },
   "engines": {
