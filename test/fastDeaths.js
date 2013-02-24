@@ -83,7 +83,8 @@ function stopCheckPort8080 () {
 function checkPort8080_run () {
   var http = require('http');
   return http.get('http://localhost:8080', function (res) {
-  }).on('error', function () {
+  }).on('error', function (e) {
+    console.log(e)
     expect('localhost:8080 became unavailable, sad day!').to.be(null);
   });
 }
